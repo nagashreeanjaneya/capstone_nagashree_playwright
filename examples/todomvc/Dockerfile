@@ -18,5 +18,5 @@ COPY specs/ ./specs/
 # Install Playwright browsers (already included in base image, but ensures latest)
 RUN npx playwright install
 
-# Run tests by default
-CMD ["npm", "test"]
+# Run tests and then keep container alive
+CMD ["sh", "-c", "npm test && echo 'Tests completed successfully! Container staying alive...' && tail -f /dev/null"]
