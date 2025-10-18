@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: playwright-service
+  namespace: {{ .Values.namespace.name }}
+spec:
+  selector:
+    app: playwright-tests
+  ports:
+  - protocol: TCP
+    port: {{ .Values.service.port }}
+    targetPort: {{ .Values.service.port }}
+  type: {{ .Values.service.type }}

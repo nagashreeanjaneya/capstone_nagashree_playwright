@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: playwright-deployment
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    app: playwright-tests
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: playwright-tests
+  template:
+    metadata:
+      labels:
+        app: playwright-tests
+    spec:
+      containers:
+      - name: playwright-tests
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        env:
+        - name: TEST_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: playwright-config
+              key: test-timeout
+        - name: BROWSERS
+          valueFrom:
+            configMapKeyRef:
+              name: playwright-config
+              key: browsers
+        - name: TEST_USER
+          valueFrom:
+            secretKeyRef:
+              name: playwright-secret
+              key: test-user

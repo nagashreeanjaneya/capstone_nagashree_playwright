@@ -1,0 +1,89 @@
+# Playwright Kubernetes Manifests
+# All-in-one file for Playwright test deployment
+
+---
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: playwright-tests
+
+---
+# ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: playwright-config
+  namespace: playwright-tests
+data:
+  test-timeout: "15000"
+  browsers: "chromium"
+  headless: "true"
+
+---
+# Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: playwright-secret
+  namespace: playwright-tests
+type: Opaque
+data:
+  test-user: dGVzdGVy
+  test-password: dGVzdDEyMw==
+
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: playwright-service
+  namespace: playwright-tests
+spec:
+  selector:
+    app: playwright-tests
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: playwright-deployment
+  namespace: playwright-tests
+  labels:
+    app: playwright-tests
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: playwright-tests
+  template:
+    metadata:
+      labels:
+        app: playwright-tests
+    spec:
+      containers:
+      - name: playwright-tests
+        image: nagashreeha/playwright-todomvc:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: TEST_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: playwright-config
+              key: test-timeout
+        - name: BROWSERS
+          valueFrom:
+            configMapKeyRef:
+              name: playwright-config
+              key: browsers
+        - name: TEST_USER
+          valueFrom:
+            secretKeyRef:
+              name: playwright-secret
+              key: test-user

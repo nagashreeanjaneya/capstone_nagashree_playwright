@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: playwright-config
+  namespace: {{ .Values.namespace.name }}
+data:
+  test-timeout: {{ .Values.config.testTimeout | quote }}
+  browsers: {{ .Values.config.browsers | quote }}
+  headless: {{ .Values.config.headless | quote }}

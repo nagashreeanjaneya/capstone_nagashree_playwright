@@ -1,0 +1,23 @@
+# Default values for playwright-tests
+replicaCount: 1
+
+image:
+  repository: nagashreeha/playwright-todomvc
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+namespace:
+  name: playwright-tests
+
+service:
+  type: ClusterIP
+  port: 3000
+
+config:
+  testTimeout: "15000"
+  browsers: "chromium"
+  headless: "true"
+
+secret:
+  testUser: dGVzdGVy
+  testPassword: dGVzdDEyMw==
